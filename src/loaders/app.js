@@ -1,17 +1,18 @@
 import express from "express";
 import connectDB from "./db.js";
-import accountRoutes from "../routes/account.routes.js";
+import productRoutes from "../routes/product.routes.js";
+import { errorHandler } from "../middlewares/error.middleware.js";
 
 const createApp = async () => {
   const app = express();
 
   app.use(express.json());
-
-  // DB connect
   await connectDB();
 
-  // Mount routes
-  app.use("/accounts", accountRoutes);
+  app.use("/products", productRoutes);
+
+  // Global error middleware (last)
+  app.use(errorHandler);
 
   return app;
 };
