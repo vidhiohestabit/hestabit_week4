@@ -1,23 +1,19 @@
 import express from "express";
-import logger from "../utils/logger.js";
 import connectDB from "./db.js";
+import accountRoutes from "../routes/account.routes.js";
 
-export default async function createApp() {
+const createApp = async () => {
   const app = express();
 
-  // Middlewares
   app.use(express.json());
-  logger.info("Middlewares loaded");
 
-  // Database
+  // DB connect
   await connectDB();
 
-  // Routes
-  app.get("/health", (req, res) => {
-    res.json({ status: "OK" });
-  });
-
-  logger.info("Routes mounted: 1 endpoint");
+  // Mount routes
+  app.use("/accounts", accountRoutes);
 
   return app;
-}
+};
+
+export default createApp;

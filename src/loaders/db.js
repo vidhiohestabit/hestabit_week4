@@ -1,13 +1,14 @@
 import mongoose from "mongoose";
-import logger from "../utils/logger.js";
-import config from "../config/index.js";
 
-export default async function connectDB() {
+const connectDB = async () => {
   try {
-    await mongoose.connect(config.dbUrl);
-    logger.info("Database connected");
+    await mongoose.connect("mongodb://127.0.0.1:27017/day2-backend");
+
+    console.log("Database connected");
   } catch (error) {
-    logger.error("Database connection failed");
+    console.error("DB connection failed:", error);
     process.exit(1);
   }
-}
+};
+
+export default connectDB;
