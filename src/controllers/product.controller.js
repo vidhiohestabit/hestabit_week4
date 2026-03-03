@@ -1,28 +1,50 @@
-import productService from "../services/product.service.js";
+import Product from "../models/product.model.js";
 
-export const createProduct = async (req, res, next) => {
+export const createProduct = async (req, res) => {
   try {
-    const product = await productService.create(req.body);
-    res.json({ success: true, data: product });
-  } catch (err) {
-    next(err);
+    const product = await Product.create(req.body);
+    res.status(201).json(product);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
-export const getProducts = async (req, res, next) => {
+export const getProducts = async (req, res) => {
   try {
-    const result = await productService.getAll(req.query);
-    res.json({ success: true, ...result });
-  } catch (err) {
-    next(err);
+    const products = await Product.find();
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
-export const deleteProduct = async (req, res, next) => {
+export const getSingleProduct = async (req, res) => {
   try {
-    await productService.delete(req.params.id);
-    res.json({ success: true, message: "Product soft deleted" });
-  } catch (err) {
-    next(err);
+    const product = await Product.findById(req.params.id);
+    res.status(200).json(product);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const updateProduct = async (req, res) => {
+  try {
+    const product = await Product.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    res.status(200).json(product);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const deleteProduct = async (req, res) => {
+  try {
+    await Product.findByIdAndDelete(req.params.id);
+    res.status(200).json({ message: "Product deleted" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
