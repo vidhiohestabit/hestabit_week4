@@ -10,9 +10,13 @@ const productSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    category: {
+    tags: {
       type: String,
     },
+    deletedAt: {
+      type: Date,
+      default: null
+    }
   },
   { timestamps: true }
 );

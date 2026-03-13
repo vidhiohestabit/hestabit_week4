@@ -1,22 +1,12 @@
 import User from "../models/user.model.js";
 
-// Create a new user
+// Create a user
 export const createUser = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
-
-    const newUser = await User.create({ username, email, password });
-
-    res.status(201).json({
-      success: true,
-      message: "User created successfully",
-      data: newUser,
-    });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    const user = await User.create(req.body);
+    res.status(201).json({ success: true, data: user });
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message });
   }
 };
 
@@ -24,14 +14,47 @@ export const createUser = async (req, res) => {
 export const getUsers = async (req, res) => {
   try {
     const users = await User.find();
-    res.json({
-      success: true,
-      data: users,
+    res.status(200).json({ success: true, data: users });
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message });
+  }
+};
+
+// Get user by ID
+export const getUserById = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user)
+      return res.status(404).json({ success: false, message: "User not found" });
+    res.status(200).json({ success: true, data: user });
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message });
+  }
+};
+
+// Update user by ID
+export const updateUserById = async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
     });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    if (!user)
+      return res.status(404).json({ success: false, message: "User not found" });
+    res.status(200).json({ success: true, data: user });
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message });
+  }
+};
+
+// Delete user by ID
+export const deleteUserById = async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user)
+      return res.status(404).json({ success: false, message: "User not found" });
+    res.status(200).json({ success: true, message: "User deleted successfully" });
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message });
   }
 };

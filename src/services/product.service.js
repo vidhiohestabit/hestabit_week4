@@ -13,21 +13,21 @@ class ProductService {
       maxPrice,
       sort,
       tags,
-      page = 1,
-      limit = 10,
+      page,
+      limit,
       includeDeleted
     } = query;
 
     let filter = {};
-
-    if (!includeDeleted) {
+    const includeDeletedFlag = includeDeleted === "true";
+    if (!includeDeletedFlag) {
       filter.deletedAt = null;
     }
 
     if (search) {
       filter.$or = [
         { name: { $regex: search, $options: "i" } },
-        { description: { $regex: search, $options: "i" } }
+        { tags: { $regex: search, $options: "i" } }
       ];
     }
 
@@ -37,32 +37,36 @@ class ProductService {
       if (maxPrice) filter.price.$lte = Number(maxPrice);
     }
 
-    if (tags) {
-      filter.tags = { $in: tags.split(",") };
-    }
-
     let sortOption = {};
     if (sort) {
       const [field, order] = sort.split(":");
       sortOption[field] = order === "desc" ? -1 : 1;
     }
 
-    const skip = (page - 1) * limit;
+    // 👉 If pagination not requested
+    if (!page && !limit) {
+      return productRepository.find(filter, { sort: sortOption });
+    }
+
+    const pageNumber = Number(page) || 1;
+    const limitNumber = Number(limit) || 10;
+
+    const skip = (pageNumber - 1) * limitNumber;
 
     const products = await productRepository.find(filter, {
       sort: sortOption,
       skip,
-      limit: Number(limit)
+      limit: limitNumber
     });
 
     const total = await productRepository.count(filter);
 
-    return { total, page: Number(page), products };
-  }
-
-  async delete(id) {
-    const deleted = await productRepository.softDelete(id);
-    if (!deleted) throw new ApiError("Product not found", "NOT_FOUND", 404);
+    return {
+      total,
+      page: pageNumber,
+      limit: limitNumber,
+      products
+    };
   }
 }
 
