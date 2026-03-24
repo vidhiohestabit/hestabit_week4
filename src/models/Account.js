@@ -47,13 +47,13 @@ const AccountSchema = new mongoose.Schema(
 );
 
 
-// 🔹 Virtual Field 
+//  Virtual Field 
 AccountSchema.virtual("fullName").get(function () {
   return `${this.firstName} ${this.lastName}`;
 });
 
 
-// 🔹 Pre-save Hook (password hashing)
+//  Pre-save Hook (password hashing)
 AccountSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
 
@@ -64,11 +64,11 @@ AccountSchema.pre("save", async function (next) {
 });
 
 
-// 🔹 Compound Index 
+//  Compound Index 
 AccountSchema.index({ status: 1, createdAt: -1 });
 
 
-// 🔹 Sparse Index example
+//  Sparse Index example
 AccountSchema.index({ email: 1 }, { sparse: true });
 
 

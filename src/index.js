@@ -37,7 +37,7 @@ app.use("/users", userRoutes);
 
 const startServer = async () => {
   await connectDB(); // ensure DB connects before server start
-  console.log("✅ DB connected");
+  console.log(" DB connected");
 
   // Start Email Worker
   startEmailWorker();
